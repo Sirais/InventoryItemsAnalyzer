@@ -24,7 +24,7 @@ namespace InventoryItemsAnalyzer
         private List<RectangleF> _highItemsPos;
         private List<RectangleF> _VeilItemsPos;
         private Element _curInventRoot;
-        private HoverItemIcon _currentHoverItem;
+        //private HoverItemIcon _currentHoverItem;
         private Vector2 _windowOffset;
         private readonly string[] _nameAttrib = {"Intelligence", "Strength", "Dexterity"};
         private readonly string[] _incElemDmg =
@@ -53,45 +53,45 @@ namespace InventoryItemsAnalyzer
 
         public override void Render()
         {
-            if (!GameController.Game.IngameState.IngameUi.InventoryPanel.IsVisible || GameController.Game.IngameState.IngameUi.OpenLeftPanel.IsVisible) return;
+            //if (!GameController.Game.IngameState.IngameUi.InventoryPanel.IsVisible || GameController.Game.IngameState.IngameUi.OpenLeftPanel.IsVisible) return;
 
-            if (GameController.Game.IngameState.UIHover.Address == 0)
-            {
-                CountInventory = 0;
+            //if (GameController.Game.IngameState.UIHover.Address == 0)
+            //{
+            //    CountInventory = 0;
 
-                return;
-            }
+            //    return;
+            //}
 
             _windowOffset = GameController.Window.GetWindowRectangle().TopLeft;
 
-            _currentHoverItem = GameController.Game.IngameState.UIHover.AsObject<HoverItemIcon>();
+            //_currentHoverItem = GameController.Game.IngameState.UIHover.AsObject<HoverItemIcon>();
 
-            if (_currentHoverItem.ToolTipType == ToolTipType.InventoryItem && _currentHoverItem.Item != null)
+            if (GameController.Game.IngameState.IngameUi.InventoryPanel.IsVisible)
             {
-                _curInventRoot = _currentHoverItem.Parent;
-
-                if (_curInventRoot == null)
-                    return;
-
-                if (CountInventory != _curInventRoot.Children.Count)
+                _curInventRoot = GameController.Game.IngameState.IngameUi.InventoryPanel[InventoryIndex.PlayerInventory];
+                _goodItemsPos = new List<RectangleF>();
+                _allItemsPos = new List<RectangleF>();
+                _highItemsPos = new List<RectangleF>();
+                _VeilItemsPos = new List<RectangleF>();
+                ScanInventory();
+                if (GameController.Game.IngameState.IngameUi.StashElement.IsVisible)
                 {
-                    CountInventory = _curInventRoot.Children.Count;
+                    _curInventRoot = GameController.Game.IngameState.IngameUi.StashElement.VisibleStash;
+                    if (GameController.Game.IngameState.IngameUi.StashElement.VisibleStash.InvType== InventoryType.NormalStash
+                        ||GameController.Game.IngameState.IngameUi.StashElement.VisibleStash.InvType == InventoryType.QuadStash) 
+                    ScanInventory();
                 }
-                else
-                {
-                    if (!Settings.HideUnderMouse)
-                    {
-                        DrawSyndicateItems(_VeilItemsPos);
-                        DrawGoodItems(_goodItemsPos);
-                        DrawHighItemLevel(_highItemsPos);
-                        ClickShit(_allItemsPos);
-                    }
-
-                    return;
-                }
-    
             }
-            ScanInventory();
+            else {
+                return;
+            }
+            if (!Settings.HideUnderMouse)
+            {
+                DrawSyndicateItems(_VeilItemsPos);
+                DrawGoodItems(_goodItemsPos);
+                DrawHighItemLevel(_highItemsPos);
+                ClickShit(_allItemsPos);
+            }
         }
 
         #region Load config
@@ -137,11 +137,7 @@ namespace InventoryItemsAnalyzer
         #region Scan Inventory
             private void ScanInventory()
             {
-
-            _goodItemsPos = new List<RectangleF>();
-            _allItemsPos = new List<RectangleF>();
-            _highItemsPos = new List<RectangleF>();
-            _VeilItemsPos = new List<RectangleF>();
+            
 
             foreach (var child in _curInventRoot.Children)
             {
